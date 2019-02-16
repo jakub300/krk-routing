@@ -1,7 +1,7 @@
 import { serializable, reference, serialize, identifier, primitive } from 'serializr';
 import { gtfsPrefix, gtfsReference, gtfsString, gtfsNumber } from './decorators';
-import Route from './Route';
 import id from './id';
+import { Route, StopTime } from '.';
 
 @gtfsPrefix('trip_')
 export default class Trip {
@@ -26,4 +26,18 @@ export default class Trip {
   @gtfsString('block_id')
   @serializable(primitive())
   blockId = '';
+
+  stopTimes: StopTime[] = [];
+
+  addStopTime(stopTime: StopTime) {
+    this.stopTimes.push(stopTime);
+  }
+
+  initialize() {
+    this.stopTimes.sort((a, b) => a.stopSequence - b.stopSequence);
+
+    if (this.route) {
+      this.route.addTrip(this);
+    }
+  }
 }

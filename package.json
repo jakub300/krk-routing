@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build-gtfs-js": "pbjs -t static-module -w es6 --no-encode --no-verify --no-create --no-delimited ./src/gtfs/gtfs.proto -o ./src/assets/data/gtfs.js",
+    "build-gtfs-js": "pbjs -t static-module -w es6 --no-encode --no-verify --no-create --no-delimited ./src/gtfs/gtfs.proto -o ./src/assets/data/gtfs.js && pbts -o ./src/assets/data/gtfs.d.ts ./src/assets/data/gtfs.js",
     "build-data": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
     "build-data-inspect": "cross-env NODE_OPTIONS=\"--inspect-brk --max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
     "build": "vue-cli-service build",
@@ -16,7 +16,7 @@
     "material-design-icons-iconfont": "^3.0.3",
     "protobufjs": "^6.8.8",
     "roboto-fontface": "*",
-    "serializr": "^1.4.1",
+    "serializr": "git+https://github.com/jakub300/serializr.git#fix-memory-leak",
     "vue": "^2.5.22",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
@@ -25,6 +25,7 @@
     "wasm-brotli": "^1.0.2"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.4.2",
     "@types/node": "^10.12.24",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-plugin-eslint": "^3.4.0",

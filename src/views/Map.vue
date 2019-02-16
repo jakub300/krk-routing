@@ -2,9 +2,7 @@
   <v-app>
     <v-content>
       <div class="c-map__info">
-        <v-card>
-          Hello
-        </v-card>
+        <v-card>Hello</v-card>
       </div>
       <v-container fill-height fluid pa-0>
         <v-layout fill-height>
@@ -15,20 +13,52 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+/* eslint-disable global-require */
+
 import 'leaflet/dist/leaflet.css';
-import { map as mapCreator, tileLayer } from 'leaflet';
+import Vue from 'vue';
+import { map as mapCreator, tileLayer, Map, Icon } from 'leaflet';
+import MapManager from '@/map/MapManager';
+import Component from 'vue-class-component';
 
-export default {
+const icons = {
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+};
+
+@Component
+export default class MapComponent extends Vue {
+  map?: Map;
+
+  mapManager?: MapManager;
+
+  static fixIcon() {
+    // eslint-disable-next-line
+    delete (Icon.Default.prototype as any)._getIconUrl;
+    // eslint-disable-next-line
+    Icon.Default.mergeOptions(icons);
+  }
+
   mounted() {
-    const map = mapCreator(this.$refs.map).setView([50.061816, 19.93757], 13);
+    MapComponent.fixIcon();
+    const mapElement = this.$refs.map as HTMLElement;
+    const map = mapCreator(mapElement).setView([50.061816, 19.93757], 13);
     this.map = map;
-
     tileLayer(
       'http://storage.waw1.cloud.ovh.net/v1/AUTH_17fd5d0a89ca4c518514de96757e45d6/tiles/tiles/{z}/{x}/{y}.png',
     ).addTo(map);
-  },
-};
+
+    (window as any).getData.then((data: any) => {
+      this.mapManager = new MapManager(map, data);
+    });
+  }
+
+  // beforeDestroy() {
+  //   //
+  // }
+}
 </script>
 
 <style lang="scss">

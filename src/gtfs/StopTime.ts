@@ -1,7 +1,6 @@
 import { serializable, primitive, reference } from 'serializr';
 import { gtfsString, gtfsReference, gtfsNumber, gtfsTime } from './decorators';
-import Trip from './Trip';
-import Stop from './Stop';
+import { Trip, Stop } from '.';
 
 export default class StopTime {
   @gtfsReference(Trip, 'trip_id')
@@ -35,4 +34,14 @@ export default class StopTime {
   @gtfsNumber()
   @serializable(primitive())
   dropOffType = -1;
+
+  initialize() {
+    if (this.trip) {
+      this.trip.addStopTime(this);
+    }
+
+    if (this.stop && this.trip) {
+      this.stop.addTrip(this.trip);
+    }
+  }
 }
