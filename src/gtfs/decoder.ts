@@ -1,10 +1,6 @@
 import { createSimpleSchema, deserialize, list, object } from 'serializr';
 import { Data } from '../assets/data/gtfs';
-import Agency from './Agency';
-import Route from './Route';
-import Stop from './Stop';
-import StopTime from './StopTime';
-import Trip from './Trip';
+import { Agency, Route, Stop, StopTime, Trip } from '.';
 
 // eslint-disable-next-line import/prefer-default-export
 export type BaseData = {

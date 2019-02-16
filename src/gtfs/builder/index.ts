@@ -8,12 +8,8 @@ import protobuf from 'protobufjs';
 import { gzipSync } from 'zlib';
 import { compress } from 'wasm-brotli';
 import { performance } from 'perf_hooks';
-import Agency from '../Agency';
 import { importObject } from '../decorators';
-import Stop from '../Stop';
-import Route from '../Route';
-import Trip from '../Trip';
-import StopTime from '../StopTime';
+import { Agency, Route, Stop, StopTime, Trip } from '..';
 
 const BASE = path.join(__dirname, '../../../data');
 const TARGET = path.join(__dirname, '../../assets/data/gtfs-data.pb');
