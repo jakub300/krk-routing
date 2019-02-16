@@ -21,6 +21,11 @@ function parseFile<T>(file: string, clazz: any, resolvers: any = null): Promise<
     fs.createReadStream(path.join(BASE, file))
       .pipe(parse({ columns: true }))
       .on('data', data => {
+        if (clazz === Trip) {
+          if (data.service_id !== 'service_1') {
+            return;
+          }
+        }
         const obj = importObject<T>(clazz, data, resolvers);
         objects.push(obj);
       })
