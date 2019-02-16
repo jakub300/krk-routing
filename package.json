@@ -4,20 +4,28 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "build-gtfs-js": "pbjs -t static-module -w es6 --no-encode --no-verify --no-create --no-delimited ./src/gtfs/gtfs.proto -o ./src/assets/data/gtfs.js",
+    "build-data": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
+    "build-data-inspect": "cross-env NODE_OPTIONS=\"--inspect-brk --max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "jkjk": "^1.0.10",
     "leaflet": "^1.4.0",
     "material-design-icons-iconfont": "^3.0.3",
+    "protobufjs": "^6.8.8",
     "roboto-fontface": "*",
+    "serializr": "^1.4.1",
     "vue": "^2.5.22",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
-    "vuetify": "^1.3.0"
+    "vuetify": "^1.3.0",
+    "wasm-brotli": "^1.0.2"
   },
   "devDependencies": {
+    "@types/node": "^10.12.24",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-plugin-typescript": "^3.4.0",
@@ -25,6 +33,8 @@
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/eslint-config-typescript": "^4.0.0",
     "babel-eslint": "^10.0.1",
+    "cross-env": "^5.2.0",
+    "csv-parse": "^4.3.1",
     "eslint": "^5.8.0",
     "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-prettier": "^3.0.1",
@@ -35,6 +45,7 @@
     "sass-loader": "^7.1.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
+    "ts-node": "^8.0.2",
     "typescript": "~3.2.2",
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-template-compiler": "^2.5.21",
@@ -44,13 +55,7 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": [
-      "vue-cli-service lint",
-      "git add"
-    ],
-    "*.vue": [
-      "vue-cli-service lint",
-      "git add"
-    ]
+    "*.js": ["vue-cli-service lint", "git add"],
+    "*.vue": ["vue-cli-service lint", "git add"]
   }
 }

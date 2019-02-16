@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+message Data {
+  repeated Agency agencies = 1;
+  repeated Stop stops = 2;
+  repeated Route routes = 3;
+  repeated Trip trips = 4;
+  repeated StopTime stopTimes = 5;
+}
+
+message Agency {
+  uint32 id = 1; // ID
+  string name = 2;
+}
+
+message Stop {
+  uint32 id = 1; // ID
+  string name = 2;
+  float lat = 3;
+  float lon = 4;
+}
+
+message Route {
+  uint32 id = 1; // ID
+  string shortName = 2;
+  string longName = 3;
+}
+
+message Trip {
+  enum Direction {
+    ONE = 0;
+    OPPOSITE = 1;
+  }
+
+  uint32 route = 1; // ID
+  uint32 id = 2; // ID
+  string headsign = 3;
+  Direction directionId = 4;
+  string blockId = 5;
+}
+
+message StopTime {
+  enum PickupDropoffType {
+    REGULARLY = 0;
+    NO_PICKUP = 1;
+    MUST_PHONE = 2;
+    MUST_COORDINATE = 3;
+  }
+  
+  uint32 trip = 1; // ID
+  uint32 arrivalTime = 2;
+  uint32 departureTime = 3;
+  uint32 stop = 4; // ID
+  uint32 stopSequence = 5;
+  string stopHeadsign = 6;
+  PickupDropoffType pickupType = 7;
+  PickupDropoffType dropOffType = 8;
+}
