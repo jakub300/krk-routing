@@ -22,7 +22,7 @@ function parseFile<T>(file: string, clazz: any, resolvers: any = null): Promise<
       .pipe(parse({ columns: true }))
       .on('data', data => {
         if (clazz === Trip) {
-          if (data.service_id !== 'service_1') {
+          if (data.service_id !== 'service_1' && data.service_id !== 'service_291') {
             return;
           }
         }
@@ -46,7 +46,7 @@ type indexedData = {
   trips: { [key: string]: any };
 };
 
-const dataById: indexedData = {
+let dataById: indexedData = {
   stops: {},
   routes: {},
   trips: {},
@@ -80,13 +80,28 @@ function indexData(type: 'routes' | 'trips' | 'stops', arr: any[]) {
   // performance.measure('stopTimes', 'stopTimesStart', 'stopTimesEnd');
   // console.log(performance.getEntriesByType('measure'));
 
+  dataById = {
+    stops: {},
+    routes: {},
+    trips: {},
+  };
+
+  const stopsTram = await parseFile('tram/stops.txt', Stop);
+  indexData('stops', stopsTram);
+  const routesTram = await parseFile('tram/routes.txt', Route);
+  indexData('routes', routesTram);
+  const tripsTram = await parseFile('tram/trips.txt', Trip, resolvers);
+  indexData('trips', tripsTram);
+  const stopTimesTram = await parseFile<StopTime>('tram/stop_times.txt', StopTime, resolvers);
+
   stopTimes.forEach(st => {
     if (st.arrivalTime !== st.departureTime) {
       delete st.departureTime;
     }
 
+    delete st.stopHeadsign;
     if (st.stopHeadsign === '' || st.stopHeadsign === (st.trip && st.trip.headsign)) {
-      delete st.stopHeadsign;
+      // TODO above delete should be here
     }
   });
 
@@ -106,7 +121,13 @@ function indexData(type: 'routes' | 'trips' | 'stops', arr: any[]) {
     stopTimes: list(object(StopTime)),
   });
 
-  const data = { agencies, stops, routes, trips, stopTimes };
+  const data = {
+    agencies,
+    stops: stops.concat(stopsTram),
+    routes: routes.concat(routesTram),
+    trips: trips.concat(tripsTram),
+    stopTimes: stopTimes.concat(stopTimesTram),
+  };
 
   // const data = { stopTimes };
   const serializedData = serialize(dataSchema, data);
@@ -125,7 +146,7 @@ function indexData(type: 'routes' | 'trips' | 'stops', arr: any[]) {
   const stopTimeBuffer = Buffer.from(Data.encode(dataMessage).finish());
   fs.writeFileSync(TARGET, stopTimeBuffer);
 
-  // console.log(stopTimeBuffer.length);
+  console.log(stopTimeBuffer.length);
   // const dataDecoded = Data.decode(stopTimeBuffer);
   // const dataDecodedObject = Data.toObject(dataDecoded);
   // // console.log(dataDecodedObject);
