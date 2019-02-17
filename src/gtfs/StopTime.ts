@@ -36,6 +36,10 @@ export default class StopTime {
   dropOffType = -1;
 
   initialize() {
+    if (!this.departureTime) {
+      this.departureTime = this.arrivalTime;
+    }
+
     if (this.trip) {
       this.trip.addStopTime(this);
     }

@@ -17,6 +17,7 @@
     "protobufjs": "^6.8.8",
     "roboto-fontface": "*",
     "serializr": "git+https://github.com/jakub300/serializr.git#fix-memory-leak",
+    "throttle-debounce": "^2.1.0",
     "vue": "^2.5.22",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
