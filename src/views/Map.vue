@@ -75,7 +75,7 @@ export default class MapComponent extends Vue {
     const map = mapCreator(mapElement).setView([50.061816, 19.93757], 13);
     this.map = map;
     tileLayer(
-      'http://storage.waw1.cloud.ovh.net/v1/AUTH_17fd5d0a89ca4c518514de96757e45d6/tiles/tiles/{z}/{x}/{y}.png',
+      'https://storage.waw1.cloud.ovh.net/v1/AUTH_17fd5d0a89ca4c518514de96757e45d6/tiles/tiles/{z}/{x}/{y}.png',
     ).addTo(map);
 
     (window as any).getData.then((data: any) => {
