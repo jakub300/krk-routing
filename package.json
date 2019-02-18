@@ -8,6 +8,7 @@
     "build-gtfs-js": "pbjs -t static-module -w es6 --no-encode --no-verify --no-create --no-delimited ./src/gtfs/gtfs.proto -o ./src/assets/data/gtfs.js && pbts -o ./src/assets/data/gtfs.d.ts ./src/assets/data/gtfs.js",
     "build-data": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
     "build-data-inspect": "cross-env NODE_OPTIONS=\"--inspect-brk --max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
+    "build-netlify": "sh ./get-data.sh && yarn build-gtfs-js && yarn build-data && yarn build",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
