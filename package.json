@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/leaflet": "^1.4.2",
     "@types/node": "^10.12.24",
+    "@types/throttle-debounce": "^1.1.0",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-plugin-typescript": "^3.4.0",
