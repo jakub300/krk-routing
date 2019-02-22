@@ -5,6 +5,7 @@ import { debounce } from 'throttle-debounce';
 import { BaseData } from '../gtfs/decoder';
 import RoutesList from '../components/RoutesList.vue';
 import { Route, Stop } from '@/gtfs';
+import { startTrace, stopTrace, printTraces, resetTracing } from './tracing';
 
 const colors = ['red', 'blue', 'green', 'orange', 'gray', 'purple'];
 
@@ -133,6 +134,8 @@ export default class MapManager {
   }
 
   routing({ start, end }: { start: LatLon; end: LatLon }) {
+    resetTracing();
+    const scope1 = startTrace('routing');
     const perfStart = performance.now();
     // console.profile('routing');
     const { data } = this;
@@ -166,6 +169,7 @@ export default class MapManager {
     const stopsData: { [key: string]: StopData } = {};
     const sqr = (v: number) => v * v;
 
+    let scope2 = startTrace('stops#forEach');
     data.stops.forEach(stop => {
       const startDistance = Math.sqrt(
         sqr((start.lon - stop.lon) * 71.6) + sqr((start.lat - stop.lat) * 111.3),
@@ -198,11 +202,14 @@ export default class MapManager {
 
       stopsData[stop.id] = stopData;
     });
+    stopTrace(scope2);
 
+    scope2 = startTrace('checkStopLoop');
     while (true) {
       let checkStop: Stop | null = null;
       let minTime = 1e10;
 
+      let scope3 = startTrace('stops#forEach', true);
       data.stops.forEach(stop => {
         const stopData = stopsData[stop.id];
         if (stopData.checked) {
@@ -214,6 +221,7 @@ export default class MapManager {
           checkStop = stop;
         }
       });
+      stopTrace(scope3);
 
       if (!checkStop) {
         break;
@@ -223,6 +231,7 @@ export default class MapManager {
 
       const checkStopData = stopsData[checkStop.id];
 
+      scope3 = startTrace('trips#forEach', true);
       Array.from(checkStop.trips).forEach(trip => {
         const index = trip.stops.indexOf(checkStop as Stop);
         // TODO: dates skipped
@@ -231,6 +240,7 @@ export default class MapManager {
           return;
         }
 
+        const scope4 = startTrace('stopsFor', true);
         for (let i = index + 1; i < trip.stops.length; i += 1) {
           const stop = trip.stops[i];
           const stopData = stopsData[stop.id];
@@ -255,13 +265,17 @@ export default class MapManager {
             });
           }
         }
+        stopTrace(scope4);
       });
+      stopTrace(scope3);
       checkStopData.checked = true;
     }
+    stopTrace(scope2);
 
     let bestTime = 1e10;
     let bestStop: Stop | null = null;
 
+    scope2 = startTrace('bestStopLoop');
     data.stops.forEach(stop => {
       const stopData = stopsData[stop.id];
       stopData.arr.time += stopData.endDuration;
@@ -276,8 +290,11 @@ export default class MapManager {
         bestStop = stop;
       }
     });
+    stopTrace(scope2);
 
     // console.profileEnd();
+    stopTrace(scope1);
+    printTraces();
 
     if (!bestStop) {
       return;
