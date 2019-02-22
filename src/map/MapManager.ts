@@ -134,6 +134,7 @@ export default class MapManager {
 
   routing({ start, end }: { start: LatLon; end: LatLon }) {
     const perfStart = performance.now();
+    // console.profile('routing');
     const { data } = this;
     // const start = { lat: 50.04368629910762, lon: 19.930604213045072 };
     // const end = { lat: 50.03452506209951, lon: 20.0037809269445 };
@@ -142,7 +143,27 @@ export default class MapManager {
     const speed = 3 / 3600;
     const transfer = 5 * 60;
 
-    const stopsData = new Map();
+    type StopDataHistoryEntry = {
+      text: string;
+      duration: number;
+      points?: LatLon[];
+      start?: number;
+      end?: number;
+    };
+
+    type StopData = {
+      startDistance: number;
+      endDistance: number;
+      endDuration: number;
+      arr: {
+        time: number;
+        history: StopDataHistoryEntry[];
+        perfDiff?: number;
+      };
+      checked: boolean;
+    };
+
+    const stopsData: { [key: string]: StopData } = {};
     const sqr = (v: number) => v * v;
 
     data.stops.forEach(stop => {
@@ -156,7 +177,7 @@ export default class MapManager {
       const duration = startDistance / speed;
       const time = startTime + duration + transfer;
 
-      stopsData.set(stop, {
+      const stopData: StopData = {
         startDistance,
         endDistance,
         endDuration,
@@ -173,16 +194,17 @@ export default class MapManager {
           ],
         },
         checked: false,
-      });
+      };
+
+      stopsData[stop.id] = stopData;
     });
-    console.log(stopsData);
 
     while (true) {
       let checkStop: Stop | null = null;
       let minTime = 1e10;
 
       data.stops.forEach(stop => {
-        const stopData = stopsData.get(stop);
+        const stopData = stopsData[stop.id];
         if (stopData.checked) {
           return;
         }
@@ -199,7 +221,7 @@ export default class MapManager {
 
       checkStop = checkStop as Stop;
 
-      const checkStopData = stopsData.get(checkStop);
+      const checkStopData = stopsData[checkStop.id];
 
       Array.from(checkStop.trips).forEach(trip => {
         const index = trip.stops.indexOf(checkStop as Stop);
@@ -211,7 +233,7 @@ export default class MapManager {
 
         for (let i = index + 1; i < trip.stops.length; i += 1) {
           const stop = trip.stops[i];
-          const stopData = stopsData.get(stop);
+          const stopData = stopsData[stop.id];
           const arrTime = trip.stopTimes[i].arrivalTime + transfer;
           if (arrTime < stopData.arr.time) {
             stopData.arr.time = arrTime;
@@ -238,10 +260,10 @@ export default class MapManager {
     }
 
     let bestTime = 1e10;
-    let bestStop = null;
+    let bestStop: Stop | null = null;
 
     data.stops.forEach(stop => {
-      const stopData = stopsData.get(stop);
+      const stopData = stopsData[stop.id];
       stopData.arr.time += stopData.endDuration;
       stopData.arr.history.push({
         text: 'walk to destination',
@@ -255,10 +277,18 @@ export default class MapManager {
       }
     });
 
-    console.log(bestStop);
-    console.log(stopsData.get(bestStop));
+    // console.profileEnd();
 
-    const bestStopData = stopsData.get(bestStop);
+    if (!bestStop) {
+      return;
+    }
+
+    bestStop = bestStop as Stop;
+
+    console.log(bestStop);
+    console.log(stopsData[bestStop.id]);
+
+    const bestStopData = stopsData[bestStop.id];
 
     type StepPoint = Stop | LatLon;
 
