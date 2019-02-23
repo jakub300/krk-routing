@@ -16,6 +16,19 @@ type LatLon = { lat: number; lon: number };
 
 export const mapManagerEvents = new Vue();
 
+const sqr = (v: number) => v * v;
+const WALKING_SPEED = 3 / 3600;
+
+function createWalkingMatrix(stops: Stop[]) {
+  return stops.map(stop1 =>
+    stops.map(
+      stop2 =>
+        Math.sqrt(sqr((stop1.lon - stop2.lon) * LON_KM) + sqr((stop1.lat - stop2.lat) * LAT_KM)) /
+        WALKING_SPEED,
+    ),
+  );
+}
+
 export default class MapManager {
   data: BaseData;
 
@@ -25,9 +38,12 @@ export default class MapManager {
 
   routeLine: Polyline = new Polyline([], { color: 'red' });
 
+  walkingMatrix: number[][] = [];
+
   constructor(map: LeafletMap, data: BaseData) {
     this.map = map;
     this.data = data;
+    this.walkingMatrix = createWalkingMatrix(data.stops);
 
     this.addStops();
     console.log(this.data);
@@ -146,7 +162,6 @@ export default class MapManager {
     // const end = { lat: 50.03452506209951, lon: 20.0037809269445 };
     const startTime = 10 * 60 * 60;
     const endTime = 24 * 60 * 60;
-    const speed = 3 / 3600;
     const transfer = 5 * 60;
 
     type StopDataHistoryEntry = {
@@ -170,7 +185,6 @@ export default class MapManager {
     };
 
     const stopsData: { [key: string]: StopData } = {};
-    const sqr = (v: number) => v * v;
 
     let scope2 = startTrace('stops#forEach');
     data.stops.forEach(stop => {
@@ -180,8 +194,8 @@ export default class MapManager {
       const endDistance = Math.sqrt(
         sqr((end.lon - stop.lon) * LON_KM) + sqr((end.lat - stop.lat) * LAT_KM),
       );
-      const endDuration = endDistance / speed;
-      const duration = startDistance / speed;
+      const endDuration = endDistance / WALKING_SPEED;
+      const duration = startDistance / WALKING_SPEED;
       const time = startTime + duration + transfer;
 
       const stopData: StopData = {
@@ -210,10 +224,11 @@ export default class MapManager {
     scope2 = startTrace('checkStopLoop');
     while (true) {
       let checkStop: Stop | null = null;
+      let checkStopIndex = -1;
       let minTime = 1e10;
 
       let scope3 = startTrace('stops#forEach', true);
-      data.stops.forEach(stop => {
+      data.stops.forEach((stop, stopIndex) => {
         const stopData = stopsData[stop.id];
         if (stopData.checked) {
           return;
@@ -222,6 +237,7 @@ export default class MapManager {
         if (minTime > stopData.arr.time) {
           minTime = stopData.arr.time;
           checkStop = stop;
+          checkStopIndex = stopIndex;
         }
       });
       stopTrace(scope3);
@@ -234,6 +250,25 @@ export default class MapManager {
 
       const checkStopData = stopsData[checkStop.id];
 
+      scope3 = startTrace('walkingMatrix', true);
+      this.walkingMatrix[checkStopIndex].forEach((time, stopIndex) => {
+        if (time === 0) {
+          return;
+        }
+
+        const stop = data.stops[stopIndex];
+        const arrTime = checkStopData.arr.time + time;
+        const stopData = stopsData[stop.id];
+        if (arrTime < stopData.arr.time) {
+          stopData.arr.time = arrTime;
+          stopData.arr.history = checkStopData.arr.history.slice(0);
+          stopData.arr.history.push({
+            text: `walk to ${stop.name}`,
+            duration: time,
+          });
+        }
+      });
+      stopTrace(scope3);
       scope3 = startTrace('trips#forEach', true);
       checkStop.tripsWithStopIndexes.forEach(([trip, index]) => {
         // TODO: dates skipped
