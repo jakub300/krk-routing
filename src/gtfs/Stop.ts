@@ -27,11 +27,23 @@ export default class Stop {
 
   routes = new Set<Route>();
 
+  private tripsWithStopIndexesData?: [Trip, number][];
+
   addTrip(trip: Trip) {
     this.trips.add(trip);
 
     if (trip.route) {
       this.routes.add(trip.route);
     }
+  }
+
+  get tripsWithStopIndexes() {
+    if (!this.tripsWithStopIndexesData) {
+      this.tripsWithStopIndexesData = Array.from(this.trips).map(
+        (trip): [Trip, number] => [trip, trip.stops.indexOf(this)],
+      );
+    }
+
+    return this.tripsWithStopIndexesData;
   }
 }

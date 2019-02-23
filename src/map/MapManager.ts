@@ -232,8 +232,7 @@ export default class MapManager {
       const checkStopData = stopsData[checkStop.id];
 
       scope3 = startTrace('trips#forEach', true);
-      Array.from(checkStop.trips).forEach(trip => {
-        const index = trip.stops.indexOf(checkStop as Stop);
+      checkStop.tripsWithStopIndexes.forEach(([trip, index]) => {
         // TODO: dates skipped
         const depTime = trip.stopTimes[index].departureTime;
         if (depTime > endTime || depTime < minTime) {
