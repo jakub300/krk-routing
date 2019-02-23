@@ -7666,9 +7666,10 @@ serialize-javascript@^1.4.0:
   resolved "https://registry.yarnpkg.com/serialize-javascript/-/serialize-javascript-1.6.1.tgz#4d1f697ec49429a847ca6f442a2a755126c4d879"
   integrity sha512-A5MOagrPFga4YaKQSWHryl7AXvbQkEqpw4NNYMTNYUNV51bA8ABHgYFpqKx+YFFrw59xMV1qGH1R4AgoNIVgCw==
 
-"serializr@git+https://github.com/jakub300/serializr.git#fix-memory-leak":
+serializr@^1.5.0:
   version "1.5.0"
-  resolved "git+https://github.com/jakub300/serializr.git#3417802b28ce7392609eaf833378562427b18328"
+  resolved "https://registry.yarnpkg.com/serializr/-/serializr-1.5.0.tgz#e6b9edf068aae2eab5b8e9d1529faa92f7359d39"
+  integrity sha512-2+/jUjvYsUzFWuI2x2em9QGjSpBgU0pkOB7zQTi6CJm4KOlOS0RAeJBaRQg/pOj4/CeoOv8YUNOngSE8EKJWcg==
 
 serve-index@^1.7.2:
   version "1.9.1"

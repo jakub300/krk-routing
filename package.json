@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "postinstall": "cd ./node_modules/serializr; yarn",
     "build-gtfs-js": "pbjs -t static-module -w es6 --no-encode --no-verify --no-create --no-delimited ./src/gtfs/gtfs.proto -o ./src/assets/data/gtfs.js && pbts -o ./src/assets/data/gtfs.d.ts ./src/assets/data/gtfs.js",
     "build-data": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
     "build-data-inspect": "cross-env NODE_OPTIONS=\"--inspect-brk --max-old-space-size=4096\" ts-node --files --project ./src/gtfs/builder/tsconfig.json ./src/gtfs/builder",
@@ -18,7 +17,6 @@
     "material-design-icons-iconfont": "^3.0.3",
     "protobufjs": "^6.8.8",
     "roboto-fontface": "*",
-    "serializr": "git+https://github.com/jakub300/serializr.git#fix-memory-leak",
     "throttle-debounce": "^2.1.0",
     "vue": "^2.5.22",
     "vue-class-component": "^6.0.0",
@@ -48,6 +46,7 @@
     "node-sass": "^4.9.0",
     "prettier": "^1.16.4",
     "sass-loader": "^7.1.0",
+    "serializr": "^1.5.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "ts-node": "^8.0.2",

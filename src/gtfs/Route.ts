@@ -1,12 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 
 import { serializable, identifier, primitive } from 'serializr';
-import { gtfsPrefix, gtfsString, gtfsNumber } from './decorators';
+import { gtfsPrefix, gtfsString, gtfsNumber, gtfsDecodeOnly } from './decorators';
 import id from './id';
 import { Trip } from '.';
 
 @gtfsPrefix('route_')
 export default class Route {
+  @gtfsDecodeOnly()
   @serializable(identifier())
   id = id();
 

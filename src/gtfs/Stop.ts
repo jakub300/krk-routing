@@ -1,11 +1,12 @@
 import { identifier, primitive, serializable } from 'serializr';
-import { gtfsNumber, gtfsString, gtfsPrefix } from './decorators';
+import { gtfsNumber, gtfsString, gtfsPrefix, gtfsDecodeOnly } from './decorators';
 import id from './id';
 import { Trip, Route } from '.';
 
 @gtfsPrefix('stop_')
 export default class Stop {
   @serializable(identifier())
+  @gtfsDecodeOnly()
   id = id();
 
   @gtfsString('stop_id')

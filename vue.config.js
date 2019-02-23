@@ -1,3 +1,5 @@
+process.env.VUE_APP_IN_APP = 1;
+
 module.exports = {
   lintOnSave: false,
 
