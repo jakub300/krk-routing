@@ -9,6 +9,9 @@ import { startTrace, stopTrace, printTraces, resetTracing } from './tracing';
 
 const colors = ['red', 'blue', 'green', 'orange', 'gray', 'purple'];
 
+const LAT_KM = 111.22980674097782;
+const LON_KM = 71.63824834077195;
+
 type LatLon = { lat: number; lon: number };
 
 export const mapManagerEvents = new Vue();
@@ -172,10 +175,10 @@ export default class MapManager {
     let scope2 = startTrace('stops#forEach');
     data.stops.forEach(stop => {
       const startDistance = Math.sqrt(
-        sqr((start.lon - stop.lon) * 71.6) + sqr((start.lat - stop.lat) * 111.3),
+        sqr((start.lon - stop.lon) * LON_KM) + sqr((start.lat - stop.lat) * LAT_KM),
       );
       const endDistance = Math.sqrt(
-        sqr((end.lon - stop.lon) * 71.6) + sqr((end.lat - stop.lat) * 111.3),
+        sqr((end.lon - stop.lon) * LON_KM) + sqr((end.lat - stop.lat) * LAT_KM),
       );
       const endDuration = endDistance / speed;
       const duration = startDistance / speed;
